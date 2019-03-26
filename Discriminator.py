@@ -15,21 +15,21 @@ class Discriminator:
         
         # Fix input_shape later
 
-        self.arch.add(Conv2D(32, 3, padding='same', strides=2, input_shape=(256, 256, 1)))
+        self.arch.add(Conv2D(32, 3, padding='same', strides=2, input_shape=(256, 256, 3), data_format='channels_last'))
         self.arch.add(LeakyReLU(0.2))
-        self.arch.add(Dropout(0.4))
+        self.arch.add(Dropout(0.1))
 
-        self.arch.add(Conv2D(64, 3, padding='same', strides=1))
+        self.arch.add(Conv2D(64, 3, padding='same', strides=2, data_format='channels_last'))
         self.arch.add(LeakyReLU(0.2))
-        self.arch.add(Dropout(0.4))
+        self.arch.add(Dropout(0.1))
 
-        self.arch.add(Conv2D(128, 3, padding='same', strides=2))
+        self.arch.add(Conv2D(128, 3, padding='same', strides=2, data_format='channels_last'))
         self.arch.add(LeakyReLU(0.2))
-        self.arch.add(Dropout(0.4))
+        self.arch.add(Dropout(0.1))
 
-        self.arch.add(Conv2D(256, 3, padding='same', strides=1))
+        self.arch.add(Conv2D(256, 3, padding='same', strides=2, data_format='channels_last'))
         self.arch.add(LeakyReLU(0.2))
-        self.arch.add(Dropout(0.4))
+        self.arch.add(Dropout(0.1))
 
         self.arch.add(Flatten())
 
@@ -39,8 +39,8 @@ class Discriminator:
         adam_lr = 0.0002
         adam_beta_1 = 0.5
         
-        self.arch.compile(optimizer=Adam(lr=adam_lr, beta_1=adam_beta_1),
-                    loss='binary_crossentropy',
+        self.arch.compile(optimizer='adam',
+                    loss='categorical_crossentropy',
                     metrics=['accuracy'])
         
         return
@@ -50,8 +50,10 @@ class Discriminator:
     
     def fit_data(self, train_data, train_labels, test_data, test_labels):
         train_history = self.arch.fit(train_data, train_labels,
-                                      epochs=5, steps_per_epoch=1000, validation_steps=200,
-                                      validation_data=(test_data, test_labels))
+                                      epochs=5, steps_per_epoch=train_data.shape[0], validation_steps=test_data.shape[0],
+                                      validation_data=(test_data, test_labels),
+                                      shuffle=True
+                                      )
         return train_history
 
 
