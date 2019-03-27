@@ -3,7 +3,7 @@ import importlib
 
 def load_model(model_string):
     print('----- Loading {}:'.format(model_string))
-    model_import_string = 'scripts.IMPL_Models.{}'.format(model_string)
+    model_import_string = 'IMPL_Models.{}'.format(model_string)
     module = importlib.import_module(model_import_string)
     return getattr(module, model_string)()
 
